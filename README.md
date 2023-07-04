@@ -109,7 +109,7 @@ Use the following command to build the docker image
 docker build -t bwhc-frontend .
 ```
 
-This will create the image using default build arguments and mark it as `bwhc-frontend`. To customize the build, spezify custom values.
+This will create the image using default build arguments and mark it as `bwhc-frontend`. To customize the build, specify custom values.
 
 * `NUXT_HOST` and `NUXT_PORT`: Server configuration, see 2.3 of bwHC manual for more information.
 * `BACKEND_PROTOCOL`, `BACKEND_HOSTNAME` and `BACKEND_PORT`: Backend access, see 2.4 of bwHC manual for more information.

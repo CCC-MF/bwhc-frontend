@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:16-alpine as builder
 
 # nuxt host and port to be replaced in package.json. (See 2.3 in bwHCPrototypeManual)
 # NUXT_HOST should have a value with public available IP address from within container.
@@ -26,6 +26,21 @@ RUN sed -i -r "s/^(\s*)baseUrl[^,]*(,?)/\1baseUrl: process.env.BASE_URL || '$BAC
 RUN sed -i -r "s/^(\s*)port[^,]*(,?)/\1port: process.env.port || ':$BACKEND_PORT'\2/" ./nuxt.config.js
 
 RUN npm run generate
+
+FROM node:16-alpine
+
+LABEL org.opencontainers.image.source = "https://github.com/CCC-MF/bwhc-frontend"
+LABEL org.opencontainers.image.licenses = MIT
+LABEL org.opencontainers.image.description = "Portal UI Prototype (Frontend Application) of bwHealthCloud"
+
+WORKDIR /bwhc-frontend
+COPY --from=builder /bwhc-frontend/nuxt.config.js .
+COPY --from=builder /bwhc-frontend/package.json .
+COPY --from=builder /bwhc-frontend/package-lock.json .
+COPY --from=builder /bwhc-frontend/.nuxt/dist ./.nuxt/dist/
+COPY --from=builder /bwhc-frontend/dist ./dist/
+
+RUN npm install --omit=dev --no-audit
 
 EXPOSE $NUXT_PORT
 
