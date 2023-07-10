@@ -31,7 +31,29 @@ sed -i -r "s/^(\s*)\"port\"[^,]*(,?)/\1\"port\": \"$NUXT_PORT\"\2/" ./package.js
 sed -i -r "s/^(\s*)baseUrl[^,]*(,?)/\1baseUrl: process.env.BASE_URL || '$BACKEND_PROTOCOL:\/\/$BACKEND_HOSTNAME'\2/" ./nuxt.config.js
 sed -i -r "s/^(\s*)port[^,]*(,?)/\1port: process.env.port || ':$BACKEND_PORT'\2/" ./nuxt.config.js
 
-npm run generate
+echo "❓ Checking existing build ..."
 
+if [ -f package.md5 ] && [ -f nuxt.md5 ]; then
+  CURRENT_PACKAGE=$(md5sum ./package.json)
+  CURRENT_NUXT_CONFIG=$(md5sum ./nuxt.config.js)
+  LAST_PACKAGE=$(cat ./package.md5)
+  LAST_NUXT_CONFIG=$(cat ./nuxt.md5)
+  if [ "$CURRENT_PACKAGE" != "$LAST_PACKAGE" ] || [ "$CURRENT_NUXT" != "$LAST_NUXT" ]; then
+    echo "⌛ Changes found, start new Nuxt build"
+    md5sum ./package.json > package.md5
+    md5sum ./nuxt.config.js > nuxt.md5
+    npm run generate
+  else
+    echo "✅ No changes, skipping Nuxt build"
+  fi
+else
+  echo "⌛ No previous build found, start new Nuxt build"
+  md5sum ./package.json > package.md5
+  md5sum ./nuxt.config.js > nuxt.md5
+  npm run generate
+fi
+
+echo "✅ Start application"
 npm start
+
 
