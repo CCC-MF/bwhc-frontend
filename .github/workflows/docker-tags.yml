@@ -1,8 +1,8 @@
-name: Docker Latest
+name: Docker Tag
 
 on:
   push:
-    branch:
+    tags:
       - '*'
 
 jobs:
@@ -27,4 +27,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/ccc-mf/bwhc-frontend:latest
+          tags: ghcr.io/ccc-mf/bwhc-frontend:${{ github.ref_name }}
